@@ -1,0 +1,46 @@
+# All required libraries are imported here for you.
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
+# Load the dataset
+crops = pd.read_csv("soil_measures.csv")
+
+# Write your code here
+print(crops.head())
+
+print(crops.isna().sum())
+print(crops["crop"].unique())
+X = crops.drop('crop', axis=1)
+y = crops['crop']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+best_predictive_feature = {}
+# Initialize the logistic regression model
+log_reg = LogisticRegression()
+best_value = 0
+columns = X.columns
+print(columns)
+for column in columns:
+    
+    # Fit the model to the training data
+    log_reg.fit(X_train[[column]], y_train)
+
+    # Predict the target values for the test data
+    y_pred = log_reg.predict(X_test[[column]])
+
+    # Calculate the accuracy of the model
+    accuracy = accuracy_score(y_test, y_pred)
+    print("Accuracy:", accuracy)
+    if accuracy > best_value:
+        best_value = accuracy
+    best_predictive_feature[column] = accuracy
+
+max_key = max(best_predictive_feature, key=best_predictive_feature.get)
+
+best_predictive_feature = {max_key: best_predictive_feature[max_key]}
+
+print(best_predictive_feature)
